@@ -1,0 +1,311 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>销售明细</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+	<div class="sales_head">
+		<button class="sales_head_btn"><img src="image/cx.png"><span>查询</span></button>
+		<p>当前选择: <span>暂未选择设备</span></p>
+		<div style="clear: both"></div>
+	</div>
+	<!--<div class="sales_top">
+		<div>微信总金额：<span class="sales_top_spana"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;支付宝总金额：<span class="sales_top_spanb"></span><br/>商品总数量：<span class="sales_top_spanc"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总金额：<span class="sales_top_spand"></span></div>
+	</div>-->
+	<div class="sales_top">
+		<p>销售金额统计表</p>
+		<table>
+			<tr>
+				<th>微信总金额</th>
+				<th>支付宝总金额</th>
+				<th>总金额</th>
+			</tr>
+			<tr>
+				<td><span class="sales_top_spana"></span></td>
+				<td><span class="sales_top_spanb"></span></td>
+				<td><span class="sales_top_spand"></span></td>
+			</tr>
+		</table>
+	</div>
+	<div class="sales_body">
+		<p>销售商品统计表</p>
+		<table class="sales_body_table">
+			<tr>
+				<th>序号</th>
+				<th>商品名称</th>
+				<th>商品数量</th>
+				<th>商品总金额</th>
+			</tr>
+			<tr class="sales_body_table_tr">
+				<td style="font-size: 12px; color: #a4a4a4; height: 30px;" colspan="5">没有数据</td>
+			</tr>
+		</table>
+	</div>
+	<div class="sales_bodys">
+		<p>销售明细统计表</p>
+		<table class="sales_bodys_table">
+			<tr>
+				<th>序号</th>
+				<th>商品名称</th>
+				<th>微信金额</th>
+				<th>支付宝金额</th>
+				<th>付款日期</th>
+			</tr>
+			<tr class="sales_bodys_table_tr">
+				<td style="font-size: 12px; color: #a4a4a4; height: 30px;" colspan="5">没有数据</td>
+			</tr>
+		</table>
+	</div>
+	<div class="sales_fixed">
+		<div class="sales_fixed_body">
+			<div>
+				设 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 备：
+				<select class="sales_fixed_body_selecta"><option style="display: none;" disabled selected>--请选择--</option></select>
+			</div>
+			<div>
+				商 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 品：
+				<select class="sales_fixed_body_selectb">
+					<option style="display: none;" disabled selected>--请选择--</option>
+				</select>
+			</div>
+			<div>起始时间：<input class="sales_fixed_body_start" max="2018-4-16T00:00" type="datetime-local"/></div>
+			<div>结束时间：<input class="sales_fixed_body_end" type="datetime-local"/></div>
+			<div>客 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 户：<input class="sales_fixed_body_int" type="text"/></div>
+			<button class="sales_fixed_body_btn">查询</button>
+			<button class="sales_fixed_body_btn_rest">重置</button>
+		</div>
+	</div>
+	<div class="sales_fixeds">
+		<img src="image/jzz.png"/>
+	</div>
+	<div class="footer"></div>
+	<footer id="footer">
+		<div onclick="nava()">
+			<img src="image/sy1.svg"/>
+			<p>首页</p>
+		</div>
+		<div>
+			<img src="image/jk.svg"/>
+			<p class="fotp">销售</p>
+		</div>
+		<div onclick="navc()">
+			<img src="image/bb1.svg"/>
+			<p>库存</p>
+		</div>
+		<div onclick="navd()">
+			<img src="image/qx1.svg"/>
+			<p>补货</p>
+		</div>
+	</footer>
+	<script type="text/javascript">
+		var u = navigator.userAgent, app = navigator.appVersion;
+		var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+		if(isiOS){
+		  	$('.sales_fixed_body_start').css('width','120px');
+		  	$('.sales_fixed_body_end').css('width','120px');
+		}
+		var empl = localStorage.getItem('name');
+		if(empl==null){
+			alert('请登录！');
+			location.href = "land.html";
+		};
+		function nava(){
+			location.href = "index.html";
+		}
+		function navb(){
+			location.href = "sales.html";
+		}
+		function navc(){
+			location.href = "stock.html";
+		}
+		function navd(){
+			location.href = "discount.html";
+		}
+		var a = 0;
+		var table;
+		var tables;
+		$('.sales_head_btn').click(function(){
+			$('.sales_fixed').show();
+			a = 1;
+		})
+		var macAddr;		//MAC地址
+		var waresId;		//商品ID
+		var startTime;		//开始时间
+		var endTime;		//结束时间
+		var consumer;		//客户
+		/*获取设备信息*/
+		$.ajax({
+			type: 'post',
+			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/payorder/dev.json',
+			data: {
+				emplCode: empl,
+			},
+			dataType: 'json',
+			success: function(data){
+				for(var i = 0; i < data.length; i++){
+					var option = document.createElement('option');
+					option.value = data[i].macAddr;
+					option.innerHTML = data[i].machName;
+					$('.sales_fixed_body_selecta').append(option);
+				}
+			}
+		})
+		/*获取商品信息*/
+		$.ajax({
+			type: 'post',
+			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/payorder/goods.json',
+			data: {
+				emplCode: empl,
+			},
+			dataType: 'json',
+			success: function(data){
+				for(var i = 0; i < data.length; i++){
+					var options = document.createElement('option');
+					options.value = data[i].waresId;
+					options.innerHTML = data[i].waresName;
+					$('.sales_fixed_body_selectb').append(options);
+				}
+			}
+		})
+		$('.sales_fixed_body_selecta').change(function(){
+			macAddr = $(this).val();
+			//$(this)[0].selectedOptions[0].innerHTML
+			$('.sales_head>p>span').html($(this)[0].selectedOptions[0].innerHTML);
+		})
+		$('.sales_fixed_body_selectb').change(function(){
+			waresId = $(this).val();
+			//$(this)[0].selectedOptions[0].innerHTML
+		})
+		/*$('.sales_fixed_body_start').change(function(){
+			console.log(this);
+		})*/
+
+		$('.sales_fixed_body_btn').click(function(){
+
+
+			startTime = $('.sales_fixed_body_start').val().replace('T', ' ');//判断操作用时间
+			startTimes = $('.sales_fixed_body_start').val().replace('T', ' ');//提交后台时间
+			endTime = $('.sales_fixed_body_end').val().replace('T', ' ');
+			consumer = $('.sales_fixed_body_int').val();
+
+			var dates = new Date();
+			var startTimez = new Date(startTimes);
+			var endtimes = new Date(endTime);
+			
+			if(startTimez.getTime() > dates.getTime()){
+				alert('开始时间不能大于当前时间');
+				return false;
+			}
+			if(endtimes.getTime() < startTimez.getTime()){
+				alert('结束时间不能小于开始时间');
+				return false;
+			}
+			if(macAddr == undefined||macAddr == ""){
+				alert('必须选择设备查询');
+				return false;
+			}
+			$('.sales_fixed').hide();
+			$('.sales_fixeds').show();
+			if(a != 0){
+				$('.sales_body_table').html(table);
+				$('.sales_bodys_table').html(tables);
+			}
+			table = $('.sales_body_table').html();
+			tables = $('.sales_bodys_table').html();
+
+			$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/payorder/market-form-phone/list.json',
+				data: {
+					macAddr: macAddr,
+					waresId: waresId,
+					startTime: startTimes,
+					endTime: endTime,
+					consumer: consumer
+				},
+				dataType: 'json',
+				success: function(msg){
+					$('.sales_fixeds').hide();
+					console.log(msg);
+					$('.sales_top_spana').html(msg.wechatTotal);
+					$('.sales_top_spanb').html(msg.alipayTotal);
+					$('.sales_top_spanc').html(msg.num);
+					$('.sales_top_spand').html(msg.total);
+					if(msg.goodsStatis.length == 0){
+						$('.sales_body_table_tr').show();
+					}
+					if(msg.saleData.length == 0){
+						$('.sales_bodys_table_tr').show();
+					}
+					for(var i = 0; i < msg.goodsStatis.length; i++){
+						var tr = document.createElement('tr');
+						var td = document.createElement('td');
+						td.innerHTML = i+1;
+						tr.append(td);
+						var td = document.createElement('td');
+						td.innerHTML = msg.goodsStatis[i].goodsName;
+						tr.append(td);
+						var td = document.createElement('td');
+						td.innerHTML = msg.goodsStatis[i].c;
+						tr.append(td);
+						var td = document.createElement('td');
+						td.innerHTML = msg.goodsStatis[i].money;
+						tr.append(td);
+						$('.sales_body_table').append(tr);
+					}
+					for(var j = 0; j < msg.saleData.length; j ++){
+						var trs = document.createElement('tr');
+						var tds = document.createElement('td');
+						tds.innerHTML = j+1;
+						trs.append(tds);
+						var tds = document.createElement('td');
+						tds.innerHTML = msg.saleData[j].goodsName;
+						trs.append(tds);
+						var tds = document.createElement('td');
+						tds.innerHTML = msg.saleData[j].jpydata.total_fee;
+						trs.append(tds);
+						var tds = document.createElement('td');
+						tds.innerHTML = msg.saleData[j].jpydata.total_amount;
+						trs.append(tds);
+						var tds = document.createElement('td');
+						//将时间戳转换为真实时间
+						if(msg.saleData[j].jpydata.paymentDate != null){
+							function timestampToTime(timestamp) {
+						        var date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+						        Y = date.getFullYear() + '-';
+						        M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+						        D = date.getDate() + ' ';
+						        h = date.getHours() + ':';
+						        m = date.getMinutes() + ':';
+						        s = date.getSeconds();
+						        return Y+M+D+h+m+s;
+						    }
+							tds.innerHTML = timestampToTime(msg.saleData[j].jpydata.paymentDate.time);
+						}					
+						trs.append(tds);
+						$('.sales_bodys_table').append(trs);
+					}
+				}
+			})
+		})
+		$('.sales_fixed_body_btn_rest').click(function(){
+			$('.sales_fixed_body_selecta').val("");
+			$('.sales_fixed_body_selectb').val("");
+			$('.sales_fixed_body_start').val("");
+			$('.sales_fixed_body_end').val("");
+			$('.sales_fixed_body_int').val("");
+			$('.sales_head>p>span').html("暂未选择设备");
+			macAddr = "";
+			waresId = "";
+		})
+	</script>
+</body>
+</html>

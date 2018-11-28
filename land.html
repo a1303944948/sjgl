@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>嘉丰后台管理系统</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+	<style type="text/css">
+		html,body{
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div class="land_home">
+		<div class="land_body">
+			<img src="image/logo.jpg"/>
+			<div class="land_body_top">
+				<div class="land_body_top_left">
+					<img src="image/user.png"/>
+				</div>
+				<div class="land_body_top_right">
+					<input id="emplCode" type="text" placeholder="请输入账号" />
+				</div>
+			</div>
+			<div class="land_body_bottom">
+				<div class="land_body_bottom_left">
+					<img src="image/pass.png"/>
+				</div>
+				<div class="land_body_bottom_right">
+					<input id="password" type="password" placeholder="请输入密码" />
+				</div>
+			</div>
+		</div>
+		<button class="land_btn">立即登录</button>
+	</div>
+	<script type="text/javascript">
+		var empl = localStorage.getItem('name');
+		if(empl!=null){
+			location.href = "index.html";
+		};
+		function addCookie(c_name,value,expireHours){
+		    var exdate = new Date();　　　　
+		    exdate.setTime(exdate.getTime() + expireHours * 60 * 60 * 1000);　　　　
+		  	document.cookie = c_name + "=" + escape(value) + ((expireHours == null) ? "" : ";expires=" + exdate.toUTCString());
+		}
+		$(document).ready(function(){
+			$('.land_btn').click(function(){
+				var userName = parseInt($('#emplCode').val());
+				var password = $('#password').val();
+				if(userName == ""||password == ""){
+					alert('请输入账号及密码进行登录！');
+					return false;
+				}
+				$.ajax({
+					type: 'post',
+					url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/checkMain/info/check.json',
+					data: {
+						emplCode: userName,
+						password: password
+					},
+					dataType: 'json',
+					success: function(data){
+						if(data.success){
+							localStorage.setItem('name',userName);
+							location.href = "index.html";
+						}else{
+							alert('账号或者密码输入不正确！')
+						};
+					}
+				})
+			})
+		})
+	</script>
+</body>
+</html>

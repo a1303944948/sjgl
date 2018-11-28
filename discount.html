@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>补货管理</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+	<!--<header id="header">
+		<img src="image/cd.png"/>
+		<p>折扣管理</p>
+	</header>
+	<ul class="head_ul">
+		<a href="discount.html"><li>折扣管理</li></a>
+		<a href="goods_deploy.html"><li>商品配置</li></a>
+		<a><li>设备检修/维修</li></a>
+		<a><li>补货管理</li></a>
+		<a><li>广告管理</li></a>
+		<a><li>货道配置</li></a>
+	</ul>
+	<div class="header"></div>-->
+	<div class="discount_body">
+		<!--<button class="discount_body_btn"><img src="image/tj.png">新增</button>
+		<div style="clear: both"></div>-->
+		<table class="discount_body_table">
+			<tr>
+				<th>设备编号</th>
+				<th>补货负责人</th>
+				<th>使用地址</th>
+				<th>操作</th>
+			</tr>
+			<!--<tr>
+				<td>0.7</td>
+				<td>20:00</td>
+				<td>21:30</td>
+				<td>浙江嘉丰机电有限公司</td>
+				<td>详情</td>
+			</tr>
+			<tr>
+				<td>0.7</td>
+				<td>20:00</td>
+				<td>21:30</td>
+				<td>浙江嘉丰机电有限公司</td>
+				<td>详情</td>
+			</tr>
+			<tr>
+				<td>0.7</td>
+				<td>20:00</td>
+				<td>21:30</td>
+				<td>浙江嘉丰机电有限公司</td>
+				<td>详情</td>
+			</tr>
+			<tr>
+				<td>0.7</td>
+				<td>20:00</td>
+				<td>21:30</td>
+				<td>浙江嘉丰机电有限公司</td>
+				<td>详情</td>
+			</tr>-->
+		</table>
+		<!--<button class="discount_body_table_btn">加载更多</button>-->
+	</div>
+	<div class="discount_fixed">
+		<div class="discount_fixed_body">
+			折扣系数:<input type="text" disabled value=""/><br/>
+			开始时间:<input type="text" disabled value=""/><br/>
+			结束时间:<input type="text" disabled value=""/><br/>
+			创 &nbsp;建 人:<input type="text" disabled value=""/><br/>
+			更新时间:<input type="text" disabled value=""/><br/>
+			创建时间:<input type="text" disabled value=""/><br/>
+			<button class="discount_fixed_body_btn">编辑</button>
+			<button class="discount_fixed_body_btns">保存</button>
+		</div>
+	</div>
+	<div class="footer"></div>
+	<footer id="footer">
+		<div onclick="nava()">
+			<img src="image/sy1.svg"/>
+			<p>首页</p>
+		</div>
+		<div onclick="navb()">
+			<img src="image/jk1.svg"/>
+			<p>销售</p>
+		</div>
+		<div onclick="navc()">
+			<img src="image/bb1.svg"/>
+			<p>库存</p>
+		</div>
+		<div>
+			<img src="image/qx.svg"/>
+			<p class="fotp">补货</p>
+		</div>
+	</footer>
+	<script type="text/javascript">
+		function nava(){
+			location.href = "index.html";
+		}
+		function navb(){
+			location.href = "sales.html";
+		}
+		function navc(){
+			location.href = "stock.html";
+		}
+		function navd(){
+			location.href = "discount.html";
+		}
+	</script>
+	<script type="text/javascript">
+		var empl = localStorage.getItem('name');
+		if(empl==null){
+			alert('请登录！');
+			location.href = "land.html";
+		};
+		$('.discount_fixed').click(function(e){
+			if(e.target==this){  
+				$(this).hide();
+			}
+		})
+		window.onload = function(){
+			setTimeout(function(){
+				$('.discount_body_table tr td').on('click',function(){
+					if($(this).index() == 3){
+						//$('.discount_fixed').show();
+						location.href = 'discount_view.html?code='+this.parentNode.childNodes[3].childNodes[1].value;
+						/*var code = this.parentNode.childNodes[3].childNodes[1].value;
+						$.ajax({
+							type: 'post',
+							url: 'http://10.1.8.36:8080/bg-uc/replenishment/view.json',
+							data: {
+								machCode: code
+							},
+							dataType: 'json',
+							success: function(obj){
+								console.log(obj);
+							}
+						})*/
+					};
+				})
+			},200)
+		}
+		$(function(){
+			var page = 2;
+			var pages = 1;
+			$('.discount_fixed_body_btn').click(function(){
+				$(this).css('display','none');
+				$('.discount_fixed_body_btns').css('display','block');
+				$('.discount_fixed_body>input:eq(0)')[0].disabled = false;
+				$('.discount_fixed_body>input:eq(1)')[0].disabled = false;
+				$('.discount_fixed_body>input:eq(2)')[0].disabled = false;
+			})
+			$('.discount_fixed_body_btns').click(function(){
+				$(this).css('display','none');
+				$('.discount_fixed_body_btn').css('display','block');
+				$('.discount_fixed_body>input:eq(0)')[0].disabled = true;
+				$('.discount_fixed_body>input:eq(1)')[0].disabled = true;
+				$('.discount_fixed_body>input:eq(2)')[0].disabled = true;
+			})
+			//10.1.8.36
+			//101.132.150.93;
+			//JSON.parse(JSON.stringify(jsonPara));
+			$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/replenishment/phone/deviceList.json',
+				data: {
+					emplCode: empl,
+					pageSize: 10000,
+					pageNumber: 1
+				},
+				dataType: 'json',
+				success: function(data){
+					console.log(data);
+					var tr = '<tr><td></td><td></td><td></td><td></td></tr>';
+					for(var i = 0; i < data.rows.length; i++){
+						$('.discount_body_table').append(tr);
+						$('.discount_body_table tr:eq('+ (i+1) +')>td:eq(0)').text(data.rows[i].machCode);
+						$('.discount_body_table tr:eq('+ (i+1) +')>td:eq(1)').text(data.rows[i].replenishBy);
+						$('.discount_body_table tr:eq('+ (i+1) +')>td:eq(2)').text(data.rows[i].useAddr);
+						$('.discount_body_table tr:eq('+ (i+1) +')>td:eq(3)').html('详情<input type="hidden" value ="'+data.rows[i].machCode+'"/>');
+						console.log($('.discount_body_table'));
+					}
+					if(data.rows.length<10){
+						pages = 2;
+						$('.discount_body_table_btn').css('display','none');
+					}
+				}
+			})
+			$('.discount_body_table_btn').click(function(){
+				if(pages == 1){
+					$.ajax({
+						type: 'post',
+						url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/replenishment/phone/deviceList.json',
+						data: {
+							emplCode: empl,
+							pageSize: 10000,
+							pageNumber: 1
+						},
+						dataType: 'json',
+						success: function(data){
+							console.log(data.rows);
+							var tr = '<tr><td></td><td></td><td></td><td></td></tr>';
+							for(var i = 0; i < data.rows.length; i++){
+								$('.discount_body_table').append(tr);
+								console.log((page-1));
+								console.log(data.rows[i].discountTie);
+								console.log(i + (page-1)*10);
+								document.getElementsByClassName('discount_body_table')[0].children[0].children[(i+1) + (page-1)*10].children[0].innerHTML = data.rows[i].machCode;
+								document.getElementsByClassName('discount_body_table')[0].children[0].children[(i+1) + (page-1)*10].children[1].innerHTML = data.rows[i].replenishBy;
+								document.getElementsByClassName('discount_body_table')[0].children[0].children[(i+1) + (page-1)*10].children[2].innerHTML = data.rows[i].useAddr;
+								document.getElementsByClassName('discount_body_table')[0].children[0].children[(i+1) + (page-1)*10].children[3].innerHTML = '详情<input type="hidden" value="'+data.rows[i].machCode+'" />';
+								//console.log($('.discount_body_table tr:eq('+ (i+1) + (page-1)*10 +')>td:eq(0)'));
+								//$('.discount_body_table tr:eq('+ (i+1) + (page-1)*10 +') td:eq(0)').html(data.rows[i].discountTie);
+							}
+							//console.log($('.discount_body_table tr:eq('+ (j+1) + (page-1)*10 +') td:eq(4)').text());
+							//console.log($('.discount_body_table tr:eq(11) td:eq(4)').html());
+							if(data.rows.length>=10){
+								page++;
+							}else{
+								pages = 2;
+								$('.discount_body_table_btn').css('display','none');
+							}
+						}
+					})
+				}
+			})
+		})
+	</script>
+</body>
+</html>

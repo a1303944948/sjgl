@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>查看补货清单</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+	<table class="discount_view_head">
+		<tr>
+			<td>运营方：</td>
+			<td class="discount_view_head_tda"></td>
+			<td>补货负责人</td>
+			<td class="discount_view_head_tdb"></td>
+		</tr>
+		<tr>
+			<td>设备编号</td>
+			<td class="discount_view_head_tdc"></td>
+			<td>机器类型</td>
+			<td class="discount_view_head_tdd"></td>
+		</tr>
+		<tr>
+			<td>设备地点</td>
+			<td colspan="3" class="discount_view_head_tde"></td>
+		</tr>
+	</table>
+	<div class="discount_view_body">
+		<p>货道信息</p>
+		<table style="text-align: center">
+			<tr>
+				<th>序号</th>
+				<th>货道数据</th>
+				<th>商品名称</th>
+				<th>数量</th>
+			</tr>
+		</table>
+		<span></span>
+	</div>
+	<script type="text/javascript">
+		function GetQueryString(name){
+			var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if(r!=null)return  unescape(r[2]); return null;
+		}
+		console.log(GetQueryString("code"));
+		$(function(){
+			$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/replenishment/view.json',
+				data: {
+					machCode: GetQueryString('code'),
+				},
+				dataType: 'json',
+				success: function(obj){
+					console.log(obj);
+					$('.discount_view_head_tda').html(obj.OperateCompany);
+					$('.discount_view_head_tdb').html(obj.ReplenishBy);
+					$('.discount_view_head_tdc').html(obj.machCode);
+					$('.discount_view_head_tdd').html(obj.MachModel);
+					$('.discount_view_head_tde').html(obj.UseAddr);
+					if(obj.msg != undefined){
+						$('.discount_view_body>span').html(obj.msg);
+						$('.discount_view_body>span').css('display','black');
+					}
+					for(var i = 0; i < obj.data.length; i++){
+						var tr = document.createElement("tr");
+						var td = document.createElement("td");
+						td.innerHTML = i+1;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = obj.data[i].cargoData;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = obj.data[i].goodsName;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = obj.data[i].isExist;
+						tr.append(td);
+						$('.discount_view_body>table').append(tr);
+					}
+				}
+			})
+		})
+	</script>
+</body>
+</html>

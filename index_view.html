@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>设备详情</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+</head>
+<body>
+	<p class="index_view_p"></p>
+	<div id='a' class="index_view"></div>
+	<div id='b' class="index_view"></div>
+	<div style="clear: both;"></div>
+	<script type="text/javascript">
+		function GetQueryString(name){
+			var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if(r!=null)return  unescape(r[2]); return null;
+		}
+		$('.index_view_p').html(GetQueryString("machCode"));
+		$.ajax({
+			type: 'post',
+			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhszss.json',
+			data: {
+				machCode: GetQueryString("machCode")
+			},
+			dataType: 'json',
+			success: function(data){
+				console.log(data);
+				for(var i = 0; i < data.length; i++){
+					if(data[i].text != undefined){
+						$("#a").append('<span>' + data[i].name + ':</span>');
+						$("#b").append('<span>' + data[i].text + '</span>');
+					}
+				}
+			}
+		})
+		/*var a = [
+			{name:'嘉丰机电',text:'正常'},
+			{name:'设备编码',text:'test001'},
+			{name:'设备地址',text:'嘉丰饭堂'},
+			{name:'001出口',text:'堵转'},
+			{name:'002出口',text:'堵转'},
+			{name:'003出口',text:'堵转'},
+			{name:'004出口',text:'正常'},
+			{name:'005出口',text:'堵转'},
+			{name:'006出口',text:'堵转'},
+			{name:'007出口',text:'堵转'},
+			{name:'008出口',text:'正常'},
+			{addTime:{date:30,day:5,hours:14,minutes:34,month:2,nanos:0,seconds:21,time:1522391661000,timezoneOffset:-480,year:118}}
+		];
+		console.log(a);
+		for(var i = 0; i < a.length; i++){
+			if(a[i].name != undefined){
+				$("#a").append(a[i].name + ':' + '<br/>');
+				$("#b").append(a[i].text + '<br/>');
+			}
+		}*/
+	</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>嘉丰机电</title>
+	<meta charset="utf-8"/>
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+</head>
+<body>
+	<!--<header id="header">
+		<img src="image/cd.png"/>
+		<p>问题售货机</p>
+	</header>
+	<ul class="head_ul">
+		<a href="index.html"><li>问题售货机</li></a>
+		<a href="account.html"><li>账号管理</li></a>
+		<a><li>设备管理</li></a>
+		<a><li>商品管理</li></a>
+		<a><li>商品类别</li></a>
+	</ul>
+	<div class="header"></div>-->
+	<div class="banner">
+		<img src="image/background.jpg"/>
+	</div>
+	<img class="index_btn" src="image/logout.svg"/>
+	<!--界面1.0版-->
+	<p class="index_p index_pa" style='margin-top: 10px;'>故障设备:<span></span><img src="image/gd.png"/></p>
+	<div id="list" v-cloak>
+		<div class="list" v-for="(datas, index) in data">
+			<span style="display: none;">{{datas.machCode}}</span>
+			<div class="list_left">
+				<img src="image/sba.jpg"/>
+			</div>
+			<div class="list_right">
+				<p>机器编码: {{datas.machCode}}</p>
+				<p>机器地址: {{datas.useAddr}}</p>
+				<span>错误信息: {{datas.array.join(',')}}</span>
+			</div>
+		</div>
+	</div>
+	<p class="index_p index_pb">正常设备:<span></span><img src="image/gd.png"/></p>
+	<div id="lists" v-cloak>
+		<div class="lists" v-for="(datax, index) in data">
+			<span style="display: none;">{{datax.machCode}}</span>
+			<div class="lists_left">
+				<img src="image/sbb.jpg"/>
+			</div>
+			<div class="lists_right">
+				<p>机器编码: {{datax.machCode}}</p>
+				<p>机器地址: {{datax.macAddr}}</p>
+				<span>设备状态: <span style="color: #41DB00">正常运行</span></span>
+			</div>
+		</div>
+	</div>
+	<!--<p class="index_p index_pc">未启用设备:<span></span><img src="image/gd.png"/></p>
+	<div id="listz" v-cloak>
+		<div class="listz" v-for="(dataz, index) in data">
+			<span style="display: none;">{{dataz.sbbh}}</span>
+			<div class="listz_left">
+				<img src="image/sbc.jpg"/>
+			</div>
+			<div class="listz_right">
+				<p>机器编码: {{dataz.sbbh}}</p>
+				<p>机器地址: {{dataz.macAddr}}</p>
+				<span>设备状态: <span style="color: #888888">未启用</span></span>
+			</div>
+		</div>
+	</div>-->
+	<!--1.1版本-->
+	<!--<p class="index_p">故障设备：<span>0</span>台</p>
+	<div id="list_1">
+		<table class="list_1">
+			<tr>
+				<td><img src="image/tip.svg"/></td>
+				<td>tojaoo001</td>
+				<td>嘉丰机电有限公司</td>
+			</tr>
+			<tr>
+				<td><img src="image/tip.svg"/></td>
+				<td>tojaoo001</td>
+				<td>嘉丰机电有限公司</td>
+			</tr>
+			<tr>
+				<td><img src="image/tip.svg"/></td>
+				<td>tojaoo001</td>
+				<td>嘉丰机电有限公司</td>
+			</tr>
+		</table>
+	</div>-->
+	<div class="footer">
+	</div>
+	<footer id="footer">
+		<div>
+			<img src="image/sy.svg"/>
+			<p class="fotp">首页</p>
+		</div>
+		<div onclick="navb()">
+			<img src="image/jk1.svg"/>
+			<p>销售</p>
+		</div>
+		<div onclick="navc()">
+			<img src="image/bb1.svg"/>
+			<p>库存</p>
+		</div>
+		<div onclick="navd()">
+			<img src="image/qx1.svg"/>
+			<p>补货</p>
+		</div>
+	</footer>
+	<script type="text/javascript">
+		var empl = localStorage.getItem('name');
+		if(empl==null){
+			alert('请登录！');
+			location.href = "land.html";
+		};
+
+		function nava(){
+			location.href = "index.html";
+		}
+		function navb(){
+			location.href = "sales.html";
+		}
+		function navc(){
+			location.href = "stock.html";
+		}
+		function navd(){
+			location.href = "discount.html";
+		}
+		$(function(){
+			//错误机器
+			var obj_i;
+			var obj_j;
+			//var obj_k;
+			//hfrd.hontech-rdcenter.com
+			$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhsz.json',
+				data: {
+					emplCode: empl
+				},
+				async: false,
+				dataType: 'json',
+				success: function(data){
+					console.log(data);
+					$('.index_pa>span').html(data.length);
+					obj_i = ({'data':data});
+				}
+			})	
+			//正常机器
+			$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhszs.json',
+				data: {
+					emplCode: empl
+				},
+				async: false,
+				dataType: 'json',
+				success: function(msg){
+					console.log(msg);
+					$('.index_pb>span').html(msg.length);
+					obj_j = ({'data':msg});
+				}
+			})
+			//关停机器
+			/*$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getSz.json',
+				data: {
+					emplCode: empl
+				},
+				async: false,
+				dataType: 'json',
+				success: function(obj){
+					console.log(obj);
+					$('.index_pc>span').html(obj.length);
+					obj_k = ({'data':obj});
+				}
+			})*/
+			var vm = new Vue({
+			  el: '#list',
+			  data: obj_i,
+			})
+			var vms = new Vue({
+			  el: '#lists',
+			  data: obj_j,
+			})
+			/*var vmz = new Vue({
+			  el: '#listz',
+			  data: obj_k,
+			})*/
+		})
+		$(document).ready(function(){
+			var pa = 1;
+			var pb = 1;
+			var pc = 1;
+			//跳转到详情页页的操作
+			$('.list').on('click',function(){
+				location.href = "index_view.html?machCode=" + $(this).children('span').html();
+			})
+			$('.lists').on('click',function(){
+				location.href = "index_view.html?machCode=" + $(this).children('span').html();
+			})
+			//故障设备的展开与关闭
+			$('.index_pa').on('click',function(){
+				if(pa == 1){
+					pa = 2;
+					$('.list').css('display','block');
+					$('.index_pa>img').css('transform','rotate(90deg)');
+				}else{
+					pa = 1;
+					$('.list').css('display','none');
+					$('.index_pa>img').css('transform','rotate(0deg)');
+				}
+			})
+			//正常设备的展开与关闭
+			$('.index_pb').on('click',function(){
+				if(pb == 1){
+					pb = 2;
+					$('.lists').css('display','block');
+					$('.index_pb>img').css('transform','rotate(90deg)');
+				}else{
+					pb = 1;
+					$('.lists').css('display','none');
+					$('.index_pb>img').css('transform','rotate(0deg)');
+				}
+			})
+			//未启用设备的展开与关闭
+			/*$('.index_pc').on('click',function(){
+				if(pc == 1){
+					pc = 2;
+					$('.listz').css('display','block');
+					$('.index_pc>img').css('transform','rotate(90deg)');
+				}else{
+					pc = 1;
+					$('.listz').css('display','none');
+					$('.index_pc>img').css('transform','rotate(0deg)');
+				}
+			})*/
+		})
+		$('.index_btn').click(function(){
+			if(confirm('是否退出登录？')){
+				localStorage.removeItem("name");
+				location.href="land.html";
+			}
+		})
+	</script>
+</body>
+</html>

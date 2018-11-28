@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>库存明细</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+	<div class="stock_head">
+		<button class="stock_head_btn"><img src="image/cx.png"><span>查询</span></button>
+		<select>
+			<option style="display: none;" disabled selected>--请选择--</option>
+		</select>
+		<div style="clear: both"></div>
+	</div>
+	<div class="stock_body">
+		<p>配置数据</p>
+		<table class="stock_body_table">
+			<tr>
+				<th>序号</th>
+				<th>商品名称</th>
+				<th>价格系数</th>
+				<th>商品总量</th>
+				<th>库存剩余</th>
+			</tr>
+			<tr class="stock_body_table_tr">
+				<td style="font-size: 12px; color: #a4a4a4; height: 30px;" colspan="5">没有数据</td>
+			</tr>
+		</table>
+	</div>
+	<div class="stock_bodys">
+		<p>货道明细</p>
+		<table class="stock_bodys_table">
+			<tr>
+				<th>序号</th>
+				<th>货道</th>
+				<th>商品编号	</th>
+				<th>商品名称	</th>
+				<th>库存</th>
+			</tr>
+			<tr class="stock_bodys_table_tr">
+				<td style="font-size: 12px; color: #a4a4a4; height: 30px;" colspan="5">没有数据</td>
+			</tr>
+		</table>
+	</div>
+	<div class="sales_fixeds">
+		<img src="image/jzz.png"/>
+	</div>
+	<div class="footer"></div>
+	<footer id="footer">
+		<div onclick="nava()">
+			<img src="image/sy1.svg"/>
+			<p>首页</p>
+		</div>
+		<div onclick="navb()">
+			<img src="image/jk1.svg"/>
+			<p>销售</p>
+		</div>
+		<div>
+			<img src="image/bb.svg"/>
+			<p class="fotp">库存</p>
+		</div>
+		<div onclick="navd()">
+			<img src="image/qx1.svg"/>
+			<p>补货</p>
+		</div>
+	</footer>
+	<script type="text/javascript">
+		var empl = localStorage.getItem('name');
+		if(empl==null){
+			alert('请登录！');
+			location.href = "land.html";
+		};
+		function nava(){
+			location.href = "index.html";
+		}
+		function navb(){
+			location.href = "sales.html";
+		}
+		function navc(){
+			location.href = "stock.html";
+		}
+		function navd(){
+			location.href = "discount.html";
+		}
+		var a = 0;
+		var table;
+		var tables;
+		$.ajax({
+			type: 'post',
+			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/inventdatail/dev.json',
+			data: {
+				emplCode: empl,
+			},
+			dataType: 'json',
+			success: function(data){
+				console.log(data);
+				for(var i = 0; i < data.length; i++){
+					var option = document.createElement('option');
+					option.innerHTML = data[i].machCode;
+					$('.stock_head>select').append(option);
+				}
+			}
+		})
+		$('.stock_head_btn').click(function(){
+			console.log($('.stock_head>select').val())
+			if($('.stock_head>select').val() != null){
+				$('.sales_fixeds').show();
+				if(a != 0){
+					$('.stock_body_table').html(table);
+					$('.stock_bodys_table').html(tables);
+				}
+				table = $('.stock_body_table').html();
+				tables = $('.stock_bodys_table').html();
+				$.ajax({
+					type: 'post',
+					url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/inventdatail/goods-config/list.json',
+					data: {
+						machCode: $('.stock_head>select').val(),
+					},
+					dataType: 'json',
+					success: function(msg){
+						$('.sales_fixeds').hide();
+						console.log(msg);
+						if(msg.sppz.length == 0){
+							$('.stock_body_table_tr').show();
+						}
+						if(msg.hdpz.length == 0){
+							$('.stock_bodys_table_tr').show();
+						}
+						for(var j = 0; j < msg.sppz.length; j++){
+							var trs = document.createElement('tr');
+							var td5 = document.createElement('td');
+							td5.innerHTML = j+1;
+							trs.append(td5);
+							var td6 = document.createElement('td');
+							td6.innerHTML = msg.sppz[j].goodsName;
+							trs.append(td6);
+							var td7 = document.createElement('td');
+							td7.innerHTML = msg.sppz[j].price;
+							trs.append(td7);
+							var td8 = document.createElement('td');
+							td8.innerHTML = msg.sppz[j].totalNum;
+							trs.append(td8);
+							var td9 = document.createElement('td');
+							td9.innerHTML = msg.sppz[j].surplusNum;
+							trs.append(td9);
+							$('.stock_body_table').append(trs);
+						}
+						for(var i = 0; i < msg.hdpz.length; i++){
+							var tr = document.createElement('tr');
+							var td1 = document.createElement('td');
+							td1.innerHTML = i+1;
+							tr.append(td1);
+							var td2 = document.createElement('td');
+							td2.innerHTML = msg.hdpz[i].cargoData;
+							tr.append(td2);
+							var td3 = document.createElement('td');
+							td3.innerHTML = msg.hdpz[i].goodsId;
+							tr.append(td3);
+							var td4 = document.createElement('td');
+							td4.innerHTML = msg.hdpz[i].goodsName;
+							tr.append(td4);
+							var td5 = document.createElement('td');
+							td5.innerHTML = msg.hdpz[i].num;
+							tr.append(td5);
+							$('.stock_bodys_table').append(tr);
+						}
+						a = 1;
+					}
+				})
+			}else{
+				alert('请选择一个设备');
+			}
+		})
+	</script>
+</body>
+</html>
