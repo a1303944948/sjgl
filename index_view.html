@@ -12,8 +12,10 @@
 </head>
 <body>
 	<p class="index_view_p"></p>
-	<div id='a' class="index_view"></div>
-	<div id='b' class="index_view"></div>
+	<!-- <div id='a' class="index_view"></div>
+	<div id='b' class="index_view"></div> -->
+	<table id="index_view_table">
+	</table>
 	<div style="clear: both;"></div>
 	<script type="text/javascript">
 		function GetQueryString(name){
@@ -24,17 +26,19 @@
 		$('.index_view_p').html(GetQueryString("machCode"));
 		$.ajax({
 			type: 'post',
-			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhszss.json',
+			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/status/getAlone.json',
 			data: {
-				machCode: GetQueryString("machCode")
+				machCode: GetQueryString("machCode"),
+				machType: GetQueryString("machType"),
 			},
 			dataType: 'json',
 			success: function(data){
 				console.log(data);
 				for(var i = 0; i < data.length; i++){
 					if(data[i].text != undefined){
-						$("#a").append('<span>' + data[i].name + ':</span>');
-						$("#b").append('<span>' + data[i].text + '</span>');
+						$('#index_view_table').append('<tr><td>' + data[i].name + '</td><td>' + data[i].text + '</td></tr>');
+						/*$("#a").append('<span>' +  + ':</span>');
+						$("#b").append('<span>' +  + '</span>');*/
 					}
 				}
 			}

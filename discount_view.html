@@ -14,28 +14,25 @@
 <body>
 	<table class="discount_view_head">
 		<tr>
-			<td>运营方：</td>
+			<td>设备编号：</td>
 			<td class="discount_view_head_tda"></td>
-			<td>补货负责人</td>
+			<td>设备名称：</td>
 			<td class="discount_view_head_tdb"></td>
 		</tr>
 		<tr>
-			<td>设备编号</td>
-			<td class="discount_view_head_tdc"></td>
-			<td>机器类型</td>
-			<td class="discount_view_head_tdd"></td>
+			<td>生成时间：</td>
+			<td colspan="3" class="discount_view_head_tdc"></td>
 		</tr>
 		<tr>
-			<td>设备地点</td>
-			<td colspan="3" class="discount_view_head_tde"></td>
+			<td>设备地址：</td>
+			<td colspan="3" class="discount_view_head_tdd"></td>
 		</tr>
 	</table>
 	<div class="discount_view_body">
-		<p>货道信息</p>
+		<p>货道信息<span class="discount_view_body_p_span"></span></p>
 		<table style="text-align: center">
 			<tr>
-				<th>序号</th>
-				<th>货道数据</th>
+				<th>货道</th>
 				<th>商品名称</th>
 				<th>数量</th>
 			</tr>
@@ -48,9 +45,42 @@
 			var r = window.location.search.substr(1).match(reg);
 			if(r!=null)return  unescape(r[2]); return null;
 		}
-		console.log(GetQueryString("code"));
+		console.log(GetQueryString("machCode"));
+
 		$(function(){
 			$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/replenishment/created/view.json',
+				data: {
+					machCode: GetQueryString("machCode"),
+				},
+				success:(data) =>{
+					$('.discount_view_head_tda').html(data.machCode);
+					$('.discount_view_head_tdb').html(data.machName);
+					$('.discount_view_head_tdc').html(data.timeBR);
+					$('.discount_view_head_tdd').html(data.useAddr);
+					$('.discount_view_body_p_span').html('补入总计：' + data.totalBR);
+					if(data.totalBR == 0){
+						console.log(123);
+						$('.discount_view_body>span').html('暂无数据');
+						$('.discount_view_body>span').css('display','block');
+					}
+					for(var i = 0; i < data.dataBR.length; i++){
+						var tr = document.createElement("tr");
+						var td = document.createElement("td");
+						td.innerHTML = data.dataBR[i].cargoData;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = data.dataBR[i].goodsName;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = data.dataBR[i].isExist;
+						tr.append(td);
+						$('.discount_view_body>table').append(tr);
+					}
+				}
+			});
+			/*$.ajax({
 				type: 'post',
 				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/replenishment/view.json',
 				data: {
@@ -85,7 +115,7 @@
 						$('.discount_view_body>table').append(tr);
 					}
 				}
-			})
+			})*/
 		})
 	</script>
 </body>

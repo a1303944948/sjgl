@@ -31,8 +31,8 @@
 		<table class="discount_body_table">
 			<tr>
 				<th>设备编号</th>
-				<th>补货负责人</th>
-				<th>使用地址</th>
+				<th>设备名称</th>
+				<!-- <th>使用地址</th> -->
 				<th>操作</th>
 			</tr>
 			<!--<tr>
@@ -112,13 +112,13 @@
 		}
 	</script>
 	<script type="text/javascript">
-		var empl = localStorage.getItem('name');
+		var empl = localStorage.name;
 		if(empl==null){
 			alert('请登录！');
 			location.href = "land.html";
 		};
 		$('.discount_fixed').click(function(e){
-			if(e.target==this){  
+			if(e.target==this){
 				$(this).hide();
 			}
 		})
@@ -164,7 +164,24 @@
 			//10.1.8.36
 			//101.132.150.93;
 			//JSON.parse(JSON.stringify(jsonPara));
-			$.ajax({
+			var that = groupitem(4);
+			console.log(that);
+			var tr = '<tr><td></td><td></td><td></td></tr>';
+			for(var i = 0; i < that.length; i++){
+				$('.discount_body_table').append(tr);
+				$('.discount_body_table tr:eq('+ (i+1) +')>td:eq(0)').text(that[i].devicecode);
+				$('.discount_body_table tr:eq('+ (i+1) +')>td:eq(1)').text(that[i].text);
+				//$('.discount_body_table tr:eq('+ (i+1) +')>td:eq(2)').text(that.rows[i].useAddr);
+				$('.discount_body_table tr:eq('+ (i+1) +')>td:eq(2)').html('详情<input type="hidden" value ="'+that[i].devicecode+'"/>');
+			}
+			$('.discount_body_table tr td').click(function(){
+				if($(this).children().val() != undefined){
+					location.href = "discount_view.html?machCode=" + $(this).children().val();
+				}
+			});
+
+
+			/*$.ajax({
 				type: 'post',
 				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/replenishment/phone/deviceList.json',
 				data: {
@@ -189,8 +206,8 @@
 						$('.discount_body_table_btn').css('display','none');
 					}
 				}
-			})
-			$('.discount_body_table_btn').click(function(){
+			})*/
+			/*$('.discount_body_table_btn').click(function(){
 				if(pages == 1){
 					$.ajax({
 						type: 'post',
@@ -227,7 +244,7 @@
 						}
 					})
 				}
-			})
+			})*/
 		})
 	</script>
 </body>

@@ -30,6 +30,7 @@ $(document).ready(function(){
 		'image/bb1.svg',
 		'image/qx1.svg'
 	];
+
 	/*$('#footer>div').click(function(){
 		switch($(this).index()){
 			case 0:
@@ -75,3 +76,29 @@ $(document).ready(function(){
 		}
 	})*/
 })
+
+
+//获取BOM结构中指定目标方法 传入：0为工厂，1为运营方，2为组别，3为人员，4为设备；//处理好所有页面后可弃用
+function groupitem(num){
+	var groupobj;
+	var groupobject = [];
+	$.ajax({
+		type: 'post',
+		url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/jf/bg/basic/cfc/searchClassifi.json',
+		async: false,
+		data: {
+			id: JSON.parse(localStorage.name).scopeofauthority,
+			by: "",
+			stop: "1",
+		},
+		success: function(data){
+			groupobj = data.obj;
+		}
+	})
+	for(var groupi = 0; groupi < groupobj.length; groupi++){
+		if(groupobj[groupi].icon == num){
+			groupobject.push(groupobj[groupi]);
+		}
+	}
+	return groupobject;
+}

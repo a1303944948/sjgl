@@ -19,7 +19,7 @@
 		</select>
 		<div style="clear: both"></div>
 	</div>
-	<div class="stock_body">
+	<!-- <div class="stock_body">
 		<p>配置数据</p>
 		<table class="stock_body_table">
 			<tr>
@@ -33,16 +33,15 @@
 				<td style="font-size: 12px; color: #a4a4a4; height: 30px;" colspan="5">没有数据</td>
 			</tr>
 		</table>
-	</div>
+	</div> -->
 	<div class="stock_bodys">
-		<p>货道明细</p>
+		<p>库存明细</p>
 		<table class="stock_bodys_table">
 			<tr>
-				<th>序号</th>
 				<th>货道</th>
-				<th>商品编号	</th>
 				<th>商品名称	</th>
-				<th>库存</th>
+				<th>商品数量	</th>
+				<th>商品价格</th>
 			</tr>
 			<tr class="stock_bodys_table_tr">
 				<td style="font-size: 12px; color: #a4a4a4; height: 30px;" colspan="5">没有数据</td>
@@ -92,7 +91,7 @@
 		var a = 0;
 		var table;
 		var tables;
-		$.ajax({
+		/*$.ajax({
 			type: 'post',
 			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/inventdatail/dev.json',
 			data: {
@@ -107,7 +106,14 @@
 					$('.stock_head>select').append(option);
 				}
 			}
-		})
+		})*/
+		var that = groupitem(4);
+		for(var i = 0; i < that.length; i++){
+			var option = document.createElement('option');
+			option.value = that[i].devicecode;
+			option.innerHTML = that[i].text;
+			$('.stock_head>select').append(option);
+		}
 		$('.stock_head_btn').click(function(){
 			console.log($('.stock_head>select').val())
 			if($('.stock_head>select').val() != null){
@@ -118,7 +124,38 @@
 				}
 				table = $('.stock_body_table').html();
 				tables = $('.stock_bodys_table').html();
-				$.ajax({
+
+			    $.ajax({
+			      type: 'post',
+			      url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/jf/com/inventory/report.json',
+			      data: {
+			        machCode: $('.stock_head>select').val(),
+			        mark: 'ASC',
+			      },
+			      dataType: 'json',
+			      success: function(data){
+			        console.log(data);
+					$('.sales_fixeds').hide();
+					for(var i = 0; i < data.reportEntity.length; i++){
+						var tr = document.createElement('tr');
+						var td2 = document.createElement('td');
+						td2.innerHTML = data.reportEntity[i].cargo;
+						tr.appendChild(td2);
+						var td3 = document.createElement('td');
+						td3.innerHTML = data.reportEntity[i].waresName;
+						tr.appendChild(td3);
+						var td4 = document.createElement('td');
+						td4.innerHTML = data.reportEntity[i].number;
+						tr.appendChild(td4);
+						var td5 = document.createElement('td');
+						td5.innerHTML = data.reportEntity[i].waresPrice;
+						tr.appendChild(td5);
+						console.log(tr);
+						$('.stock_bodys_table').append(tr);
+					}
+			      }
+			    })
+				/*$.ajax({
 					type: 'post',
 					url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/inventdatail/goods-config/list.json',
 					data: {
@@ -174,7 +211,7 @@
 						}
 						a = 1;
 					}
-				})
+				})*/
 			}else{
 				alert('请选择一个设备');
 			}

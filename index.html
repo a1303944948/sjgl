@@ -30,7 +30,27 @@
 	</div>
 	<img class="index_btn" src="image/logout.svg"/>
 	<!--界面1.0版-->
-	<p class="index_p index_pa" style='margin-top: 10px;'>故障设备:<span></span><img src="image/gd.png"/></p>
+	<div class="head">
+		<div class="head_left"></div>
+		<div class="head_right"></div>
+	</div>
+	<div class="heads"></div>
+	<div id='lists'>
+		<div class="lists" v-for="dataz in datas">
+			<span style="display: none;">{{dataz[1][0]}}</span>
+			<p style="display: none;">{{dataz[2][2]}}</p>
+			<div class="lists_left">
+				<img v-if="dataz[3][1] == 0" src="image/sbb.jpg"/>
+				<img v-else src="image/sba.jpg"/>
+			</div>
+			<div class="lists_right">
+				<p>机器名称: {{dataz[0][0]}}</p>
+				<p>机器编号: {{dataz[1][0]}}</p>
+				<span>设备状态: <span>{{dataz[3][0]}}</span></span>
+			</div>
+		</div>
+	</div>
+	<!-- <p class="index_p index_pa" style='margin-top: 10px;'>故障设备:<span></span><img src="image/gd.png"/></p>
 	<div id="list" v-cloak>
 		<div class="list" v-for="(datas, index) in data">
 			<span style="display: none;">{{datas.machCode}}</span>
@@ -57,7 +77,7 @@
 				<span>设备状态: <span style="color: #41DB00">正常运行</span></span>
 			</div>
 		</div>
-	</div>
+	</div> -->
 	<!--<p class="index_p index_pc">未启用设备:<span></span><img src="image/gd.png"/></p>
 	<div id="listz" v-cloak>
 		<div class="listz" v-for="(dataz, index) in data">
@@ -114,7 +134,7 @@
 		</div>
 	</footer>
 	<script type="text/javascript">
-		var empl = localStorage.getItem('name');
+		var empl = localStorage.name;
 		if(empl==null){
 			alert('请登录！');
 			location.href = "land.html";
@@ -133,31 +153,73 @@
 			location.href = "discount.html";
 		}
 		$(function(){
-			//错误机器
-			var obj_i;
-			var obj_j;
-			//var obj_k;
-			//hfrd.hontech-rdcenter.com
+			var object = groupitem(4);
+			var machObject = [];
+			console.log(object);
+			for(var i = 0; i < object.length; i++){
+				machObject.push(object[i].devicecode);
+			};
+			//机器数据汇总
 			$.ajax({
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/status/getHomePage.json',
 				type: 'post',
-				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhsz.json',
 				data: {
-					emplCode: empl
+					strArray: JSON.stringify(machObject),
 				},
 				async: false,
-				dataType: 'json',
+				success: function(data){
+					$('.head_left').eq(0).html('正常：' + (data.NornalNum + data.NornalFake));
+					$('.head_right').eq(0).html('故障：' + (data.BadNum + data.BadNum24));
+				}
+			})
+			//机器列表
+			$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/status/getTotalStatus.json',
+				data: {
+					strArray: JSON.stringify(machObject),
+					machType: "", 
+					status: "",
+				},
+				async: false,
+				//dataType: 'json',
 				success: function(data){
 					console.log(data);
-					$('.index_pa>span').html(data.length);
-					obj_i = ({'data':data});
+					for(var i = 0; i < data.length; i++){
+						var a = data[i][3][0].replace('<br> ','/');
+						data[i][3][0] = a;
+					}
+					console.log(data);
+					var vmz = new Vue({
+					  el: '#lists',
+					  data: {
+					  	datas: data,
+					  },
+					})
 				}
-			})	
+			})
+			//var obj_k;
+			//hfrd.hontech-rdcenter.com
+			// $.ajax({
+			// 	type: 'post',
+			// 	url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhsz.json',
+			// 	data: {
+			// 		emplCode: empl
+			// 	},
+			// 	async: false,
+			// 	dataType: 'json',
+			// 	success: function(data){
+			// 		console.log(data);
+			// 		$('.index_pa>span').html(data.length);
+			// 		obj_i = ({'data':data});
+			// 	}
+			// })	
 			//正常机器
-			$.ajax({
+			/*$.ajax({
 				type: 'post',
 				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhszs.json',
 				data: {
-					emplCode: empl
+					emplCode: JSON.parse(localStorage.name).empcode,
 				},
 				async: false,
 				dataType: 'json',
@@ -166,7 +228,7 @@
 					$('.index_pb>span').html(msg.length);
 					obj_j = ({'data':msg});
 				}
-			})
+			})*/
 			//关停机器
 			/*$.ajax({
 				type: 'post',
@@ -182,14 +244,6 @@
 					obj_k = ({'data':obj});
 				}
 			})*/
-			var vm = new Vue({
-			  el: '#list',
-			  data: obj_i,
-			})
-			var vms = new Vue({
-			  el: '#lists',
-			  data: obj_j,
-			})
 			/*var vmz = new Vue({
 			  el: '#listz',
 			  data: obj_k,
@@ -204,7 +258,8 @@
 				location.href = "index_view.html?machCode=" + $(this).children('span').html();
 			})
 			$('.lists').on('click',function(){
-				location.href = "index_view.html?machCode=" + $(this).children('span').html();
+				console.log(123);
+				location.href = "index_view.html?machCode=" + $(this).children('span').html()+"&machType=" + $(this).children('p').html();
 			})
 			//故障设备的展开与关闭
 			$('.index_pa').on('click',function(){

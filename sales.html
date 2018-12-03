@@ -24,14 +24,12 @@
 		<p>销售金额统计表</p>
 		<table>
 			<tr>
-				<th>微信总金额</th>
-				<th>支付宝总金额</th>
+				<th>总数量</th>
 				<th>总金额</th>
 			</tr>
 			<tr>
 				<td><span class="sales_top_spana"></span></td>
 				<td><span class="sales_top_spanb"></span></td>
-				<td><span class="sales_top_spand"></span></td>
 			</tr>
 		</table>
 	</div>
@@ -55,8 +53,8 @@
 			<tr>
 				<th>序号</th>
 				<th>商品名称</th>
-				<th>微信金额</th>
-				<th>支付宝金额</th>
+				<th>支付方式</th>
+				<th>金额</th>
 				<th>付款日期</th>
 			</tr>
 			<tr class="sales_bodys_table_tr">
@@ -70,15 +68,15 @@
 				设 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 备：
 				<select class="sales_fixed_body_selecta"><option style="display: none;" disabled selected>--请选择--</option></select>
 			</div>
-			<div>
+			<!-- <div>
 				商 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 品：
 				<select class="sales_fixed_body_selectb">
 					<option style="display: none;" disabled selected>--请选择--</option>
 				</select>
-			</div>
+			</div> -->
 			<div>起始时间：<input class="sales_fixed_body_start" max="2018-4-16T00:00" type="datetime-local"/></div>
 			<div>结束时间：<input class="sales_fixed_body_end" type="datetime-local"/></div>
-			<div>客 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 户：<input class="sales_fixed_body_int" type="text"/></div>
+			<!-- <div>客 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 户：<input class="sales_fixed_body_int" type="text"/></div> -->
 			<button class="sales_fixed_body_btn">查询</button>
 			<button class="sales_fixed_body_btn_rest">重置</button>
 		</div>
@@ -136,30 +134,25 @@
 			$('.sales_fixed').show();
 			a = 1;
 		})
-		var macAddr;		//MAC地址
+		var machcode;		//设备编号
 		var waresId;		//商品ID
 		var startTime;		//开始时间
 		var endTime;		//结束时间
 		var consumer;		//客户
 		/*获取设备信息*/
-		$.ajax({
-			type: 'post',
-			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/payorder/dev.json',
-			data: {
-				emplCode: empl,
-			},
-			dataType: 'json',
-			success: function(data){
-				for(var i = 0; i < data.length; i++){
-					var option = document.createElement('option');
-					option.value = data[i].macAddr;
-					option.innerHTML = data[i].machName;
-					$('.sales_fixed_body_selecta').append(option);
-				}
-			}
-		})
+		console.log(JSON.parse(localStorage.name).empcode);
+		
+		var that = groupitem(4);
+		console.log(that);
+
+		for(var i = 0; i < that.length; i++){
+			var option = document.createElement('option');
+			option.value = that[i].devicecode;
+			option.innerHTML = that[i].text;
+			$('.sales_fixed_body_selecta').append(option);
+		}
 		/*获取商品信息*/
-		$.ajax({
+		/*$.ajax({
 			type: 'post',
 			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/payorder/goods.json',
 			data: {
@@ -174,15 +167,11 @@
 					$('.sales_fixed_body_selectb').append(options);
 				}
 			}
-		})
+		})*/
 		$('.sales_fixed_body_selecta').change(function(){
-			macAddr = $(this).val();
+			machcode = $(this).val();
 			//$(this)[0].selectedOptions[0].innerHTML
 			$('.sales_head>p>span').html($(this)[0].selectedOptions[0].innerHTML);
-		})
-		$('.sales_fixed_body_selectb').change(function(){
-			waresId = $(this).val();
-			//$(this)[0].selectedOptions[0].innerHTML
 		})
 		/*$('.sales_fixed_body_start').change(function(){
 			console.log(this);
@@ -190,16 +179,14 @@
 
 		$('.sales_fixed_body_btn').click(function(){
 
-
 			startTime = $('.sales_fixed_body_start').val().replace('T', ' ');//判断操作用时间
-			startTimes = $('.sales_fixed_body_start').val().replace('T', ' ');//提交后台时间
-			endTime = $('.sales_fixed_body_end').val().replace('T', ' ');
-			consumer = $('.sales_fixed_body_int').val();
+			startTimes = $('.sales_fixed_body_start').val().split('T')[0] + ' 00:00';//提交后台时间
+			endTime = $('.sales_fixed_body_end').val().split('T')[0] + ' 00:00';
 
 			var dates = new Date();
 			var startTimez = new Date(startTimes);
 			var endtimes = new Date(endTime);
-			
+
 			if(startTimez.getTime() > dates.getTime()){
 				alert('开始时间不能大于当前时间');
 				return false;
@@ -208,8 +195,16 @@
 				alert('结束时间不能小于开始时间');
 				return false;
 			}
-			if(macAddr == undefined||macAddr == ""){
+			if(machcode == undefined||machcode == ""){
 				alert('必须选择设备查询');
+				return false;
+			}
+			if(startTimes == " 00:00"){
+				alert('开始时间不能为空');
+				return false;
+			}
+			if(endTime == " 00:00"){
+				alert('结束时间不能为空');
 				return false;
 			}
 			$('.sales_fixed').hide();
@@ -220,8 +215,99 @@
 			}
 			table = $('.sales_body_table').html();
 			tables = $('.sales_bodys_table').html();
-
+			console.log('['+ '"' + machcode + '"' +']');
+			console.log(startTimes);
+			console.log(endTime);
+			//销售明细统计表
+		    $.ajax({
+		      type: 'post',
+		      url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/jf/com/report/web/deal.json',//采用的交易监视器接口
+		      data: {
+		        array: '['+ '"' + machcode + '"' +']',
+		        payway: "",
+		        sign: 0,
+		        payStatus: -1,
+		        starttime: startTimes,//startTimes
+		        endtime: endTime,//endTime
+		      },
+		      dataType: 'json',
+		      success: function(data){
+		        console.log(data);
+				$('.sales_fixeds').hide();
+				for(var j = 0; j < data.dealMonitor.length; j ++){
+					var trs = document.createElement('tr');
+					var tds = document.createElement('td');
+					tds.innerHTML = j+1;
+					trs.append(tds);
+					var tds = document.createElement('td');
+					tds.innerHTML = data.dealMonitor[j].waresName;
+					trs.append(tds);
+					var tds = document.createElement('td');
+					tds.innerHTML = data.dealMonitor[j].mark;
+					trs.append(tds);
+					var tds = document.createElement('td');
+					tds.innerHTML = data.dealMonitor[j].total_amount;
+					trs.append(tds);
+					var tds = document.createElement('td');
+					tds.innerHTML = data.dealMonitor[j].paymentDate;
+					//将时间戳转换为真实时间
+					/*if(msg.saleData[j].jpydata.paymentDate != null){
+						function timestampToTime(timestamp) {
+					        var date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+					        Y = date.getFullYear() + '-';
+					        M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+					        D = date.getDate() + ' ';
+					        h = date.getHours() + ':';
+					        m = date.getMinutes() + ':';
+					        s = date.getSeconds();
+					        return Y+M+D+h+m+s;
+					    }
+						tds.innerHTML = timestampToTime(msg.saleData[j].jpydata.paymentDate.time);
+					}	*/				
+					trs.append(tds);
+					$('.sales_bodys_table').append(trs);
+				}
+		      }
+		    })
+		    //销售商品统计表
 			$.ajax({
+				type: 'post',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/jf/com/report/forms/report.json',
+				data: {
+					array: '['+ '"' + machcode + '"' +']',
+					sign: 1,
+					starttime: startTimes,
+					endtime: endTime,
+				},
+				dataType: 'json',
+				success: function(data){
+					console.log(data);
+					var totalSum = 0;
+					var valueSum = 0;
+					for(var i = 0; i < data.listEntity.length; i++){
+						var tr = document.createElement('tr');
+						var td = document.createElement('td');
+						td.innerHTML = i+1;
+						tr.append(td);
+						var td = document.createElement('td');
+						td.innerHTML = data.listEntity[i].goodsName;
+						tr.append(td);
+						var td = document.createElement('td');
+						td.innerHTML = data.listEntity[i].totalCount;
+						tr.append(td);
+						var td = document.createElement('td');
+						td.innerHTML = data.listEntity[i].total;
+						tr.append(td);
+						$('.sales_body_table').append(tr);
+						totalSum += data.listEntity[i].totalCount;
+						valueSum += data.listEntity[i].total;
+					}
+					$('.sales_top_spana').html(totalSum);
+					$('.sales_top_spanb').html(valueSum);
+				}
+			})
+
+			/*$.ajax({
 				type: 'post',
 				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/payorder/market-form-phone/list.json',
 				data: {
@@ -294,16 +380,14 @@
 						$('.sales_bodys_table').append(trs);
 					}
 				}
-			})
+			})*/
 		})
 		$('.sales_fixed_body_btn_rest').click(function(){
 			$('.sales_fixed_body_selecta').val("");
-			$('.sales_fixed_body_selectb').val("");
 			$('.sales_fixed_body_start').val("");
 			$('.sales_fixed_body_end').val("");
-			$('.sales_fixed_body_int').val("");
 			$('.sales_head>p>span').html("暂未选择设备");
-			macAddr = "";
+			machcode = "";
 			waresId = "";
 		})
 	</script>
