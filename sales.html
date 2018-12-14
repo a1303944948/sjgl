@@ -74,8 +74,8 @@
 					<option style="display: none;" disabled selected>--请选择--</option>
 				</select>
 			</div> -->
-			<div>起始时间：<input class="sales_fixed_body_start" max="2018-4-16T00:00" type="datetime-local"/></div>
-			<div>结束时间：<input class="sales_fixed_body_end" type="datetime-local"/></div>
+			<div>起始时间：<input class="sales_fixed_body_start" max="2018-4-16T00:00" type="date"/></div>
+			<div>结束时间：<input class="sales_fixed_body_end" type="date"/></div>
 			<!-- <div>客 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 户：<input class="sales_fixed_body_int" type="text"/></div> -->
 			<button class="sales_fixed_body_btn">查询</button>
 			<button class="sales_fixed_body_btn_rest">重置</button>
@@ -176,7 +176,6 @@
 		/*$('.sales_fixed_body_start').change(function(){
 			console.log(this);
 		})*/
-
 		$('.sales_fixed_body_btn').click(function(){
 
 			startTime = $('.sales_fixed_body_start').val().replace('T', ' ');//判断操作用时间
@@ -191,8 +190,8 @@
 				alert('开始时间不能大于当前时间');
 				return false;
 			}
-			if(endtimes.getTime() < startTimez.getTime()){
-				alert('结束时间不能小于开始时间');
+			if(endtimes.getTime() <= startTimez.getTime()){
+				alert('结束时间不能小于或等于开始时间');
 				return false;
 			}
 			if(machcode == undefined||machcode == ""){

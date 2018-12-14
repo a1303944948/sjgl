@@ -28,8 +28,31 @@
 			<td colspan="3" class="discount_view_head_tdd"></td>
 		</tr>
 	</table>
+	<div class="discount_view_bodyq">
+		<p>清出列表<span class="discount_view_body_p_spanq"></span></p>
+		<table style="text-align: center">
+			<tr>
+				<th>货道数据</th>
+				<th>商品名称</th>
+				<th>是否过期</th>
+				<th>清出数量</th>
+			</tr>
+		</table>
+		<span></span>
+	</div>
+	<div class="discount_view_bodyz">
+		<p>补入商品汇总<span class="discount_view_body_p_spanz"></span></p>
+		<table style="text-align: center">
+			<tr>
+				<th>序号</th>
+				<th>商品名称</th>
+				<th>商品总数量</th>
+			</tr>
+		</table>
+		<span></span>
+	</div>
 	<div class="discount_view_body">
-		<p>货道信息<span class="discount_view_body_p_span"></span></p>
+		<p>补入明细<span class="discount_view_body_p_span"></span></p>
 		<table style="text-align: center">
 			<tr>
 				<th>货道</th>
@@ -55,13 +78,14 @@
 					machCode: GetQueryString("machCode"),
 				},
 				success:(data) =>{
+					console.log(data);
 					$('.discount_view_head_tda').html(data.machCode);
 					$('.discount_view_head_tdb').html(data.machName);
 					$('.discount_view_head_tdc').html(data.timeBR);
 					$('.discount_view_head_tdd').html(data.useAddr);
 					$('.discount_view_body_p_span').html('补入总计：' + data.totalBR);
+					$('.discount_view_body_p_spanz').html('补入总计：' + data.totalBR);
 					if(data.totalBR == 0){
-						console.log(123);
 						$('.discount_view_body>span').html('暂无数据');
 						$('.discount_view_body>span').css('display','block');
 					}
@@ -77,6 +101,43 @@
 						td.innerHTML = data.dataBR[i].isExist;
 						tr.append(td);
 						$('.discount_view_body>table').append(tr);
+					}
+					if(data.dataZBR == 0){
+						$('.discount_view_bodyz>span').html('暂无数据');
+						$('.discount_view_bodyz>span').css('display','block');
+					}
+					for(var i = 0; i < data.dataZBR.length; i++){
+						var tr = document.createElement("tr");
+						var td = document.createElement("td");
+						td.innerHTML = i + 1;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = data.dataZBR[i].goodsName;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = data.dataZBR[i].isExist;
+						tr.append(td);
+						$('.discount_view_bodyz>table').append(tr);
+					}
+					if(data.dataQC == 0){
+						$('.discount_view_bodyq>span').html('暂无数据');
+						$('.discount_view_bodyq>span').css('display','block');
+					}
+					for(var i = 0; i < data.dataQC.length; i++){
+						var tr = document.createElement("tr");
+						var td = document.createElement("td");
+						td.innerHTML = data.dataQC[i].cargoDatan;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = data.dataQC[i].waresName;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = data.dataQC[i].isPastdue;
+						tr.append(td);
+						var td = document.createElement("td");
+						td.innerHTML = data.dataQC[i].clearData;
+						tr.append(td);
+						$('.discount_view_bodyq>table').append(tr);
 					}
 				}
 			});

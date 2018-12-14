@@ -52,7 +52,7 @@
 		}
 		$(document).ready(function(){
 			$('.land_btn').click(function(){
-				var userName = parseInt($('#emplCode').val());
+				var userName = $('#emplCode').val();
 				var password = $('#password').val();
 				if(userName == ""||password == ""){
 					alert('请输入账号及密码进行登录！');
