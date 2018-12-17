@@ -46,6 +46,8 @@
 			<tr class="stock_bodys_table_tr">
 				<td style="font-size: 12px; color: #a4a4a4; height: 30px;" colspan="5">没有数据</td>
 			</tr>
+			<tbody class="stock_bodys_table_tbody">
+			</tbody>
 		</table>
 	</div>
 	<div class="sales_fixeds">
@@ -136,22 +138,28 @@
 			      success: function(data){
 			        console.log(data);
 					$('.sales_fixeds').hide();
-					for(var i = 0; i < data.reportEntity.length; i++){
-						var tr = document.createElement('tr');
-						var td2 = document.createElement('td');
-						td2.innerHTML = data.reportEntity[i].cargo;
-						tr.appendChild(td2);
-						var td3 = document.createElement('td');
-						td3.innerHTML = data.reportEntity[i].waresName;
-						tr.appendChild(td3);
-						var td4 = document.createElement('td');
-						td4.innerHTML = data.reportEntity[i].number;
-						tr.appendChild(td4);
-						var td5 = document.createElement('td');
-						td5.innerHTML = data.reportEntity[i].waresPrice;
-						tr.appendChild(td5);
-						console.log(tr);
-						$('.stock_bodys_table').append(tr);
+					$('.stock_bodys_table_tbody:eq(0)').html('');
+					if(data.reportEntity.length == 0){
+						$('.stock_bodys_table_tr').show();
+					}else{
+						$('.stock_bodys_table_tr').hide();
+						for(var i = 0; i < data.reportEntity.length; i++){
+							var tr = document.createElement('tr');
+							var td2 = document.createElement('td');
+							td2.innerHTML = data.reportEntity[i].cargo;
+							tr.appendChild(td2);
+							var td3 = document.createElement('td');
+							td3.innerHTML = data.reportEntity[i].waresName;
+							tr.appendChild(td3);
+							var td4 = document.createElement('td');
+							td4.innerHTML = data.reportEntity[i].number;
+							tr.appendChild(td4);
+							var td5 = document.createElement('td');
+							td5.innerHTML = data.reportEntity[i].waresPrice;
+							tr.appendChild(td5);
+							console.log(tr);
+							$('.stock_bodys_table_tbody:eq(0)').append(tr);
+						}
 					}
 			      }
 			    })
