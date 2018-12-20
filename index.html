@@ -184,8 +184,13 @@
 				async: false,
 				//dataType: 'json',
 				success: function(data){
+					console.log(data);
 					for(var i = 0; i < data.length; i++){
 						var a = data[i][3][0].replace('<br> ','/');
+						data[i][3][0] = a;
+					}
+					for(var i = 0; i < data.length; i++){
+						var a = data[i][3][0].replace('<br>','/');
 						data[i][3][0] = a;
 					}
 					var vmz = new Vue({
