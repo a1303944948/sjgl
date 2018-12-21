@@ -161,7 +161,7 @@
 			};
 			//机器数据汇总
 			$.ajax({
-				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/status/getHomePage.json',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/status/getHomePage.json',
 				type: 'post',
 				data: {
 					strArray: JSON.stringify(machObject),
@@ -175,7 +175,7 @@
 			//机器列表
 			$.ajax({
 				type: 'post',
-				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/status/getTotalStatus.json',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/status/getTotalStatus.json',
 				data: {
 					strArray: JSON.stringify(machObject),
 					machType: "", 
@@ -205,7 +205,7 @@
 			//hfrd.hontech-rdcenter.com
 			// $.ajax({
 			// 	type: 'post',
-			// 	url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhsz.json',
+			// 	url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/sbzt/getsbbhsz.json',
 			// 	data: {
 			// 		emplCode: empl
 			// 	},
@@ -220,7 +220,7 @@
 			//正常机器
 			/*$.ajax({
 				type: 'post',
-				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getsbbhszs.json',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/sbzt/getsbbhszs.json',
 				data: {
 					emplCode: JSON.parse(localStorage.name).empcode,
 				},
@@ -235,7 +235,7 @@
 			//关停机器
 			/*$.ajax({
 				type: 'post',
-				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/sbzt/getSz.json',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/sbzt/getSz.json',
 				data: {
 					emplCode: empl
 				},

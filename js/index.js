@@ -84,7 +84,7 @@ function groupitem(num){
 	var groupobject = [];
 	$.ajax({
 		type: 'post',
-		url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/jf/bg/basic/cfc/searchClassifi.json',
+		url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/jf/bg/basic/cfc/searchClassifi.json',
 		async: false,
 		data: {
 			id: JSON.parse(localStorage.name).scopeofauthority,

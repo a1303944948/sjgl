@@ -154,7 +154,7 @@
 		/*获取商品信息*/
 		/*$.ajax({
 			type: 'post',
-			url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/payorder/goods.json',
+			url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/payorder/goods.json',
 			data: {
 				emplCode: empl,
 			},
@@ -220,7 +220,7 @@
 			//销售明细统计表
 		    $.ajax({
 		      type: 'post',
-		      url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/jf/com/report/web/deal.json',//采用的交易监视器接口
+		      url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/jf/com/report/web/deal.json',//采用的交易监视器接口
 		      data: {
 		        array: '['+ '"' + machcode + '"' +']',
 		        payway: "",
@@ -271,7 +271,7 @@
 		    //销售商品统计表
 			$.ajax({
 				type: 'post',
-				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/jf/com/report/forms/report.json',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/jf/com/report/forms/report.json',
 				data: {
 					array: '['+ '"' + machcode + '"' +']',
 					sign: 1,
@@ -308,7 +308,7 @@
 
 			/*$.ajax({
 				type: 'post',
-				url: 'http://hfrd.hontech-rdcenter.com:8080/bg-uc/payorder/market-form-phone/list.json',
+				url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/payorder/market-form-phone/list.json',
 				data: {
 					macAddr: macAddr,
 					waresId: waresId,
