@@ -39,15 +39,51 @@
 			</div>
 		</div>
 		<button class="land_btn">立即登录</button>
+		<div class="land_fixed">
+			<div class="land_fixed_body">
+				<div class="land_fixed_body_top"><input class="land_fixed_body_top_int" type="number" placeholder="请输入验证码"/></div>
+				<div class="land_fixed_body_bottom"><button class="land_fixed_body_bottom_btn">确定</button></div>
+				<div class="land_fixed_body_clear">×</div>
+			</div>
+		</div>
 	</div>
 	<script type="text/javascript">
+		function getUrlVal(name){
+			var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if(r!=null)return  unescape(r[2]); return null;
+		}
+		/*$.ajax({
+			type: 'get',
+			url: 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxcd2f393d1300fc05&redirect_uri=http://www.hontech-rdcenter.com/testSjgl/land.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect',
+			data: {},
+			success: function(data){
+				console.log(data)
+			}
+
+		})*/
+		if(getUrlVal('code') == ""||getUrlVal('code') == null||getUrlVal('code') == undefined){
+			window.location.href = 'transfer.html';
+		}
+		//3498ys.natappfree.cc
+		var openId; 
+		$.ajax({
+			type: 'post',
+			url: 'http://test.hontech-rdcenter.com:8080/bg-uc/wechat/getOpenId.json',
+			data: {
+				code: getUrlVal('code'),
+			},
+			success: function(data){
+				openId = data.openId;
+			}
+		})
 		var empl = localStorage.getItem('name');
 		if(empl!=null){
 			location.href = "index.html";
 		};
 		function addCookie(c_name,value,expireHours){
-		    var exdate = new Date();　　　　
-		    exdate.setTime(exdate.getTime() + expireHours * 60 * 60 * 1000);　　　　
+		    var exdate = new Date();
+		    exdate.setTime(exdate.getTime() + expireHours * 60 * 60 * 1000);
 		  	document.cookie = c_name + "=" + escape(value) + ((expireHours == null) ? "" : ";expires=" + exdate.toUTCString());
 		}
 		$(document).ready(function(){
@@ -60,16 +96,87 @@
 				}
 				$.ajax({
 					type: 'get',
-					url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/jf/bg/basic/new/login.json',
+					//http://ngi8az.natappfree.cc/bg-uc/jf/bg/basic/new/login.json
+					//http://hfrd.hontech-rdcenter.com:8080/hontechgroup/jf/bg/basic/new/login.json
+					url: 'http://test.hontech-rdcenter.com:8080/bg-uc/jf/bg/basic/new/login.json',
 					data: {
 						username: userName,
 						password: password,
 					},
 					success: function(data){
-						console.log(data.user);
 						if(data.status == "success"){
-							localStorage.setItem('name',JSON.stringify(data.user));
-							location.href = "index.html";
+							$.ajax({
+								type: 'post',
+								url: 'http://test.hontech-rdcenter.com:8080/bg-uc/wechat/operate.json',
+								data: {
+									empCode: data.user.empcode,
+									openId: openId,
+								},
+								success: function(msg){
+									switch(msg.result){
+										case 0: //记录已存在且用户与openid一致
+											localStorage.setItem('name',JSON.stringify(data.user));
+											location.href = "index.html";
+											break;
+										case 1: //记录已存在且用户一致但openid不同
+											if(confirm('该账号已存在绑定，是否更换为当前微信绑定?')){
+												$.ajax({
+													type: 'post',
+													url: 'http://test.hontech-rdcenter.com:8080/bg-uc/wechat/getSecurityCode.json',
+													data: {
+														empCode: data.user.empcode,
+													},
+													success: function(res){
+														$('.land_fixed:eq(0)').css('display','block');
+													}
+												});
+												function runRes(code){
+													$.ajax({
+														type: 'post',
+														url: 'http://test.hontech-rdcenter.com:8080/bg-uc/wechat/update.json',
+														data: {
+															securityCode: code,
+															empCode: data.user.empcode,
+															openId: openId,
+														},
+														success: function(res){
+															if(res.result == 2){
+																alert('更换成功！');
+																$('.land_fixed:eq(0)').css('display','none');
+																localStorage.setItem('name',JSON.stringify(data.user));
+																location.href = "index.html";
+															}else{
+																alert('验证码校验失败！');
+															}
+														}
+													});
+												}
+												$('.land_fixed_body_bottom_btn:eq(0)').click(function(){
+													var securityCode = $('.land_fixed_body_top_int:eq(0)').val();
+													runRes(securityCode);
+												})
+												$('.land_fixed_body_clear:eq(0)').click(function(){
+													$('.land_fixed:eq(0)').css('display','none');
+												})
+											}else{
+												localStorage.setItem('name',JSON.stringify(data.user));
+												location.href = "index.html";
+											};
+											break;
+										case 2: //记录不存在且保存成功
+											localStorage.setItem('name',JSON.stringify(data.user));
+											location.href = "index.html";
+											break;
+										case 3: //记录不存在但保存失败
+											alert('网络异常，请重试！');
+											break;
+										case 4: //数据异常
+											alert('网络异常或不在手机微信打开，请重试！');
+											//alert('网络异常，请重试！');
+											break;
+									}
+								}
+							})
 						}else{
 							alert("登录失败，请重新再试！");
 						}

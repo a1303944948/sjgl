@@ -201,8 +201,70 @@ footer>div>p{
 	top: 80%;
 	left: 10%;
 }
-
-
+.land_fixed{
+	display: none;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	background-color: rgba(0,0,0,0.4);
+	z-index: 9999;
+}
+.land_fixed_body{
+	width: 200px;
+	height: 140px;
+	background-color: #ffffff;
+	border-radius: 4px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -100px;
+	margin-top: -70px;
+}
+.land_fixed_body_top{
+	width: 200px;
+	height: 70px;
+	line-height: 70px;
+	text-align: center;
+}
+.land_fixed_body_top>input{
+	width: 160px;
+	height: 40px;
+	font-size: 16px;
+	text-align: center;
+}
+.land_fixed_body_bottom{
+	width: 200px;
+	height: 70px;
+	line-height: 70px;
+	text-align: center;
+}
+.land_fixed_body_bottom>button{
+	width: 80px;
+	height: 30px;
+	border: none;
+	background-color: rgba(40,141,253,1);
+	color: #ffffff;
+	border-radius: 4px;
+}
+.land_fixed_body_clear{
+	display: block;
+	width: 29px;
+	height: 30px;
+	line-height: 30px;
+	font-size: 24px;
+	color: #a4a4a4;
+	font-weight: 700;
+	text-align: center;
+	padding-left: 1px;
+	position: absolute;
+	top: -15px;
+	right: -15px;
+	border: 1px #a4a4a4 solid;
+	border-radius: 50%;
+	background-color: #ffffff;
+}
 
 
 /*********************************************首页部分************************************************/

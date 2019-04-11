@@ -137,7 +137,7 @@
 		var empl = localStorage.name;
 		if(empl==null){
 			alert('请登录！');
-			location.href = "land.html";
+			location.href = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxcd2f393d1300fc05&redirect_uri=http%3a%2f%2fwww.hontech-rdcenter.com%2ftestSjgl%2fland.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
 		};
 
 		function nava(){
@@ -161,7 +161,7 @@
 			};
 			//机器数据汇总
 			$.ajax({
-				url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/status/getHomePage.json',
+				url: 'http://test.hontech-rdcenter.com:8080/bg-uc/status/getHomePage.json',
 				type: 'post',
 				data: {
 					strArray: JSON.stringify(machObject),
@@ -175,7 +175,7 @@
 			//机器列表
 			$.ajax({
 				type: 'post',
-				url: 'http://hfrd.hontech-rdcenter.com:8080/hontechgroup/status/getTotalStatus.json',
+				url: 'http://test.hontech-rdcenter.com:8080/bg-uc/status/getTotalStatus.json',
 				data: {
 					strArray: JSON.stringify(machObject),
 					machType: "", 
@@ -304,7 +304,7 @@
 		$('.index_btn').click(function(){
 			if(confirm('是否退出登录？')){
 				localStorage.removeItem("name");
-				location.href="land.html";
+				location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxcd2f393d1300fc05&redirect_uri=http%3a%2f%2fwww.hontech-rdcenter.com%2ftestSjgl%2fland.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
 			}
 		})
 	</script>

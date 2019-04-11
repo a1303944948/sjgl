@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no, email=no" />
+	<link rel="stylesheet" type="text/css" href="css/index.css"/>
+	<script type="text/javascript" src="wm.js"></script>
+	<title></title>
+	<style type="text/css">
+		html,body{
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(to top right,#0F7CCF,#98CEF8);
+		}
+		.ximg>img{
+			width: 160px;
+			height: 160px;
+		}
+		.xbtn{
+			display: block;
+			width: 40%;
+			height: 50px;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 10px;
+			font-size: 18px;
+			color: #ffffff;
+			background-color: #0D6FB8;
+			border: 1px #e5e5e5 solid;
+			box-sizing: border-box;
+			border-radius: 7px;
+			position: absolute;
+			bottom: 50px;
+			left: 30%;
+
+		}
+		.dhead{
+			position: relative;
+			top: 90px;
+		}
+	</style>
+</head>
+<body>
+	<div style="text-align: center;" class="xbody"></div>
+	<div class="dhead">
+		<div style="text-align: center;" class="ximg"></div>
+		<br/>
+		<div style="text-align: center; font-size: 1.4rem;color: #e5e5e5;" class="xtop"></div>
+		<div style="text-align: center;" class="xhead">商品名称:<span></span></div>
+		<div style="text-align: center;" class="xbottom"></div>
+	</div>
+	<button class="xbtn">发起支付</button>
+	<div id="form"></div>
+	<script type="text/javascript">
+		var URLS = 'http://test.hontech-rdcenter.com:8080/';
+		//var URLS = 'http://k3u2ht.natappfree.cc/';
+		if(getUrlVal('GoodsId') == ""||getUrlVal('GoodsId') == null||getUrlVal('GoodsId') == undefined){
+			alert('无效的订单，请关闭当前页面！');
+		}
+
+		var goods = new Object();
+		ajax('post',URLS + 'bg-uc/jf/com/util/web/prodattr.json','waresId=' + getUrlVal('GoodsId') + '&macAddr=' + getUrlVal('MacAddress'),function(data){
+			c('xbottom')[0].innerHTML = '订单号：' + getUrlVal('Order');
+			c('xhead')[0].innerHTML = '商品名称：' + data.goodsMaster.waresName;
+			c('ximg')[0].innerHTML = '<img src="'+data.goodsMaster.waresImage2+'"/>';
+			//c('xbody')[0].innerHTML = '订单号：' + getUrlVal('Order');
+			c('xtop')[0].innerHTML = '商品价格：' + data.goodsMaster.waresPrice + '元';
+			n('title')[0].innerHTML = data.goodsMaster.operParty;
+			goods.ID = data.goodsMaster.waresId;
+			goods.tradename = data.goodsMaster.waresName;
+			goods.price = data.goodsMaster.waresPrice;
+			goods.callbackUrl = '';
+			goods.macAddress = getUrlVal('MacAddress');
+			goods.order = getUrlVal('Order');
+			start();
+		},function(){},'json');
+
+		function start(){
+			function WebSocketTest(){
+		        if("WebSocket" in window){
+		           //打开一个 web socket
+		           var ws = new WebSocket("ws://106.12.198.37:54300/websocket?Self=" + goods.order);
+		            
+		           ws.onopen = function(){
+		              // Web Socket 已连接上，使用 send() 方法发送数据
+		              ws.send(123);
+		           };
+
+		            
+		           ws.onmessage = function (evt){
+		              var received_msg = JSON.parse(evt.data);
+		              if(received_msg.Content == 'Success'){
+	    				c('xbtn')[0].innerHTML = '出货成功';
+		              	ws.close();
+		              }else if(received_msg.Content == 'Error'){
+	    				c('xbtn')[0].innerHTML = '出货失败';
+		              }
+		           };
+
+		           ws.onerror = function(e){
+		           		log('发生了未知错误');
+		           }
+		            
+		           ws.onclose = function(){ 
+		              // 关闭 websocket
+		           };
+		        }else{
+		           // 浏览器不支持 WebSocket
+		           log("您的浏览器不支持 WebSocket!");
+		        }
+		    }
+			if(/MicroMessenger/.test(window.navigator.userAgent)){
+				//微信客户端执行内容
+				var wxCode = getUrlVal('code');
+				c('xbtn')[0].onclick = function(){
+					ajax('post',URLS + 'bg-uc/jf/com/pm/h5wxpay.json','goodsMaster=' + JSON.stringify(goods) + '&code=' + wxCode,function(data){
+						WebSocketTest();
+						function onBridgeReady(){
+							/*alert('appId:' + data.appId);
+							alert('timeStamp:' + data.timeStamp);
+							alert('nonceStr:' + data.nonceStr);
+							alert('package:' + data.package);
+							alert('signType:' + data.signType);
+							alert('paySign:' + data.paySign);*/
+						   	WeixinJSBridge.invoke('getBrandWCPayRequest',{
+						        "appId": data.appId,     //公众号名称，由商户传入     
+						        "timeStamp": data.timeStamp,         //时间戳，自1970年以来的秒数     
+						        "nonceStr": data.nonceStr, //随机串   
+						        "package": data.package,
+						        "signType": data.signType,      //微信签名方式：
+						        "paySign": data.paySign, //微信签名 
+						    },
+						    function(res){
+							    if(res.err_msg == "get_brand_wcpay_request:ok"){
+							    	// 使用以上方式判断前端返回,微信团队郑重提示：
+							    	//res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+							    	c('xbtn')[0].innerHTML = '出货中';
+							    	c('xbtn')[0].onclick = function(){};
+							    }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+							    	window.location.href = 'http://www.hontech-rdcenter.com/testSjgl/transfer.html?MacAddress=' + getUrlVal('MacAddress') + '&GoodsId=' + getUrlVal('GoodsId');
+							    }
+						   });
+						}
+						if(data.QRcodeUsed == '10001'){
+							if(typeof WeixinJSBridge == "undefined"){
+							   	if(document.addEventListener){
+							       	document.addEventListener('WeixinJSBridgeReady',function(){onBridgeReady(data)}, false);
+							   	}else if(document.attachEvent){
+							       	document.attachEvent('WeixinJSBridgeReady', function(){onBridgeReady(data)});
+							       	document.attachEvent('onWeixinJSBridgeReady', function(){onBridgeReady(data)});
+							   	}
+							}else{
+							   	onBridgeReady(data);
+							}
+						}else{
+							alert('该二维码已被使用，请重新选择商品！');
+						}
+					},'','json');
+				}
+			}else if(/AlipayClient/.test(window.navigator.userAgent)){
+				//支付宝客户端执行内容
+				//goods.callbackUrl = 'http://www.hontech-rdcenter.com/testSjgl/test.html?MacAddress='+goods.macAddress+'&GoodsId='+goods.ID;
+				//手机网站支付
+				/*log(goods);
+				c('xbtn')[0].onclick = function(){
+					ajax('post','http://test.hontech-rdcenter.com:8080/bg-uc/jf/com/pm/h5zfbpay.json','goodsMaster=' + JSON.stringify(goods) + '&returnUrl=' + 'http://www.hontech-rdcenter.com/testSjgl/test.html?MacAddress='+goods.macAddress+'&GoodsId='+goods.ID,function(data){
+						log(data);
+						alert('成功');
+						n('body')[0].innerHTML = n('body')[0].innerHTML + data;
+						document.forms[0].submit();
+					},function(){alert(456)});
+				}*/
+				//JSJDK唤起收银台支付
+
+		        // 页面载入完成后即唤起收银台
+		        // 此处${tradeNO}为模板语言语法，实际调用样例类似为tradePpay("2016072621001004200000000752")
+		        // 点击payButton按钮后唤起收银台
+				ajax('post',URLS + 'bg-uc/jf/com/pm/h5zfbpay.json','goodsMaster=' + JSON.stringify(goods) + '&code=' + getUrlVal('auth_code'),function(data){
+					var order = getUrlVal('Order');
+					var tradeNO = data.tradeNO;
+					var QRcodeUsed = data.QRcodeUsed;
+					WebSocketTest();
+
+		         	c('xbtn')[0].onclick = function(){
+						if(QRcodeUsed == '10001'){
+			                tradePay(tradeNO,order);
+						}else{
+							alert('该二维码已被使用，请重新选择商品！');
+						}
+					}
+				},function(){},'json');
+		
+		        // 通过jsapi关闭当前窗口，仅供参考，更多jsapi请访问
+		        // /aod/54/104510
+		  
+			    // 由于js的载入是异步的，所以可以通过该方法，当AlipayJSBridgeReady事件发生后，再执行callback方法
+			    function ready(callback) {
+			         if (window.AlipayJSBridge) {
+			             callback && callback();
+			         } else {
+			             document.addEventListener('AlipayJSBridgeReady', callback, false);
+			         }
+			    }
+			  
+			    function tradePay(tradeNO,order){
+		            // 通过传入交易号唤起快捷调用方式(注意tradeNO大小写严格)
+			        ready(function(){
+			            AlipayJSBridge.call("tradePay", {
+			                tradeNO: tradeNO
+			            }, function(data){
+			                if ("9000" == data.resultCode) {
+								//AlipayJSBridge.call('closeWebview');
+								c('xbtn')[0].innerHTML = '出货中';
+							    c('xbtn')[0].onclick = function(){};
+						    	/*function WebSocketTest(){
+							        if("WebSocket" in window){
+							           	//打开一个 web socket
+							           	var ws = new WebSocket("ws://106.12.198.37:54300/websocket?Self=" + order);
+							            
+							           	ws.onopen = function(){
+							              	// Web Socket 已连接上，使用 send() 方法发送数据
+							              	ws.send(123);
+							           	};
+
+							            
+							            ws.onmessage = function (evt){
+							              	var received_msg = JSON.parse(evt.data);
+							              	if(received_msg.Content == 'Success'){
+						    					c('xbtn')[0].innerHTML = '出货成功';
+							              		//ws.close();
+							              	}else if(received_msg.Content == 'Error'){
+						    					c('xbtn')[0].innerHTML = '出货失败';
+							              	}
+							    		};
+
+							           	ws.onerror = function(e){
+							           		log('发生了未知错误');
+							           	}
+							            
+							           	ws.onclose = function(){ 
+							              	// 关闭 websocket
+							              	log("连接已关闭..."); 
+							           	};
+							        }else{
+							           	// 浏览器不支持 WebSocket
+							           	log("您的浏览器不支持 WebSocket!");
+							        }
+							    }
+							    WebSocketTest();
+			                 	alert("支付成功");*/
+			                }
+			            });
+			        });
+			    }
+			}else{
+				//其他浏览器时执行的内容
+				c('dhead')[0].innerHTML = '请使用微信或者支付宝打开页面';
+			}
+		}
+		
+
+		/*https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxeb627d3bd0c3e2a4&redirect_uri=http%3a%2f%2fwww.hontech-rdcenter.com%2ftestSjgl%2fland.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
+
+		http://www.hontech-rdcenter.com/testSjgl/test.html?MacAddress=50:ff:99:30:33:57&GoodsId=w8se2bz67
+
+		https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxeb627d3bd0c3e2a4&redirect_uri=http%3a%2f%2fwww.hontech-rdcenter.com%2ftestSjgl%2ftest.html%3fMacAddress%3d50%3aff%3a99%3a30%3a33%3a57%26GoodsId%3dw8se2bz67&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect*/
+
+		
+	</script>
+</body>
+</html>
