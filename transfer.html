@@ -51,7 +51,7 @@
 		}*/
 		//https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxeb627d3bd0c3e2a4&redirect_uri=http%3a%2f%2fwww.hontech-rdcenter.com%2ftestSjgl%2ftest.html%3fMacAddress%3d50%3aff%3a99%3a30%3a33%3a57%26GoodsId%3dw8se2bz67&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
 		//var url = 'http://www.hontech-rdcenter.com/testSjgl/land.html';
-		var url = 'http://www.hontech-rdcenter.com/testSjgl/test.html?MacAddress=' + getUrlVal('MacAddress') + '&GoodsId=' + getUrlVal('GoodsId') + '&Order=' + getUrlVal('Order');
+		var url = 'http://www.hontech-rdcenter.com/testSjgl/test.html?MacAddress=' + getUrlVal('MacAddress') + '&GoodsId=' + getUrlVal('GoodsId') + '&Order=' + getUrlVal('Order') + '&Price=' + getUrlVal('Price') + '&Discount=' + getUrlVal('Discount');
 		if(/MicroMessenger/.test(window.navigator.userAgent)){
 			//window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxcd2f393d1300fc05&redirect_uri='+encodeURIComponent(url)+'&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
 			ajax('post',URLS + 'bg-uc/jf/com/util/web/prodattr.json','waresId=' + getUrlVal('GoodsId') + '&macAddr=' + getUrlVal('MacAddress'),function(data){
