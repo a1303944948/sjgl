@@ -39,7 +39,8 @@
 <body>
 	<div id="transferp"><img src="image/loding.png"/></div>
 	<script type="text/javascript">
-		var URLS = 'http://test.hontech-rdcenter.com:8080/';
+		var URLS = 'http://7daqrw.natappfree.cc/';
+		//var URLS = 'http://test.hontech-rdcenter.com:8080/';
 		//var URLS = 'http://k3u2ht.natappfree.cc/';
 		/*if(getUrlVal('GoodsId') == ""&&getUrlVal('GoodsId') == null&&getUrlVal('GoodsId') == undefined){
 			alert('不是有效的商品');
@@ -51,16 +52,16 @@
 		}*/
 		//https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxeb627d3bd0c3e2a4&redirect_uri=http%3a%2f%2fwww.hontech-rdcenter.com%2ftestSjgl%2ftest.html%3fMacAddress%3d50%3aff%3a99%3a30%3a33%3a57%26GoodsId%3dw8se2bz67&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
 		//var url = 'http://www.hontech-rdcenter.com/testSjgl/land.html';
-		var url = 'http://www.hontech-rdcenter.com/testSjgl/test.html?MacAddress=' + getUrlVal('MacAddress') + '&GoodsId=' + getUrlVal('GoodsId') + '&Order=' + getUrlVal('Order') + '&Price=' + getUrlVal('Price') + '&Discount=' + getUrlVal('Discount');
+		var url = 'http://www.hontech-rdcenter.com/testSjgl/test1.html?MacAddress=' + getUrlVal('MacAddress') + '&GoodsId=' + getUrlVal('GoodsId') + '&Order=' + getUrlVal('Order') + '&Price=' + getUrlVal('Price') + '&Discount=' + getUrlVal('Discount');
 		if(/MicroMessenger/.test(window.navigator.userAgent)){
 			//window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxcd2f393d1300fc05&redirect_uri='+encodeURIComponent(url)+'&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
 			ajax('post',URLS + 'bg-uc/jf/com/util/web/prodattr.json','waresId=' + getUrlVal('GoodsId') + '&macAddr=' + getUrlVal('MacAddress'),function(data){
 				window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='+data.appId+'&redirect_uri='+encodeURIComponent(url)+'&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
-			},function(){},'json');
+			},function(){alert('返回了一个错误，请重新扫码！')},'json');
 		}else if(/AlipayClient/.test(window.navigator.userAgent)){
 			ajax('post',URLS + 'bg-uc/jf/com/util/web/prodattr.json','waresId=' + getUrlVal('GoodsId') + '&macAddr=' + getUrlVal('MacAddress'),function(data){
 				window.location.href = 'https://openauth.alipaydev.com/oauth2/publicAppAuthorize.htm?app_id='+data.alipayAppId+'&scope=auth_base&redirect_uri='+encodeURIComponent(url);
-			},function(){},'json');
+			},function(){alert('返回了一个错误，请重新扫码！')},'json');
 		}else{
 			d('transferp').innerHTML="请使用微信或支付宝打开";
 		}
