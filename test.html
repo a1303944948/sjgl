@@ -64,8 +64,8 @@
 	<button class="xbtn">发起支付</button>
 	<div id="form"></div>
 	<script type="text/javascript">
-		var URLS = 'http://7daqrw.natappfree.cc/';
-		//var URLS = 'http://test.hontech-rdcenter.com:8080/';
+		//var URLS = 'http://7daqrw.natappfree.cc/';
+		var URLS = 'http://test.hontech-rdcenter.com:8080/';
 		//var URLS = 'http://k3u2ht.natappfree.cc/';
 		if(getUrlVal('GoodsId') == ""||getUrlVal('GoodsId') == null||getUrlVal('GoodsId') == undefined){
 			alert('无效的订单，请关闭当前页面！');
@@ -91,7 +91,7 @@
 			goods.macAddress = getUrlVal('MacAddress');
 			goods.order = getUrlVal('Order');
 			start();
-		},function(){},'json');
+		},function(){alert('与服务器连接错误！')},'json');
 
 		function start(){
 			function WebSocketTest(){
@@ -116,7 +116,7 @@
 		           };
 
 		           ws.onerror = function(e){
-		           		log('发生了未知错误');
+		              	alert('连接发生了错误！');
 		           }
 		            
 		           ws.onclose = function(){ 
@@ -170,8 +170,10 @@
 							}else{
 							   	onBridgeReady(data);
 							}
+						}else if(data.QRcodeUsed == '10000'){
+							alert(data.text);
 						}else{
-							alert('该二维码已被使用，请重新选择商品！');
+							alert('发起支付失败！');
 						}
 					},function(msg){
 						alert('发起支付失败!');
@@ -204,8 +206,10 @@
 		         	c('xbtn')[0].onclick = function(){
 						if(QRcodeUsed == '10001'){
 			                tradePay(tradeNO,order);
+						}else if(QRcodeUsed == '10000'){
+							alert(data.text);
 						}else{
-							alert('该二维码已被使用，请重新选择商品！');
+							alert('发起支付失败！');
 						}
 					}
 				},function(){},'json');
